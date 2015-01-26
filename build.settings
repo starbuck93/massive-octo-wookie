@@ -1,0 +1,25 @@
+-- build.settings for project: BitcoinWeatherApp
+settings =
+{
+    plugins =
+    {
+        ["plugin.google.play.services"] =
+        {
+            publisherId = "com.coronalabs"
+        },
+    },      
+    orientation =
+    {
+        default = "portrait",  --initial launch orientation
+        supported = {portrait},  --table of allowed options for auto-orientation
+    },
+    android =
+    {
+        versionCode = "1",
+        usesPermissions =
+        {
+            "android.permission.INTERNET",
+            "android.permission.ACCESS_NETWORK_STATE",
+        },
+    },
+}
