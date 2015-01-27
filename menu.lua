@@ -70,16 +70,20 @@ function scene:create( event )
 		bitcoin.y = temp4.y+100
 	local bitcoinTime = display.newText( options2 )
 		bitcoinTime.y = bitcoin.y+50
+	local autoRe = display.newText( options2 )
 
 	local encoded = ""
 	local encodedBitcoin = ""
 	local weatherTable = {}
 	local bitcoinTable = {}
+	local coindeskPrices = {}
 	local currentTemp = ""
 	local currentWind = ""
 	local currentBitcoinPrice = ""
 	local updatedTimeBitcoin = ""
 	local weatherTimeVar1 = ""
+	local encodedPricesCoindesk = ""
+	local btc_to_usd = ""
 
 	local function networkListener( event )
 	    if ( event.isError ) then
@@ -87,11 +91,10 @@ function scene:create( event )
 	    else
 	        encoded = event.response
 	        weatherTable = json.decode( encoded )
-
         	currentTemp = weatherTable.main["temp"] --current temperature in Kelvin
         	currentWind = weatherTable.wind["speed"] 
         	weatherTimeVar1 = weatherTable.dt
-	    
+	    	
 	    end
 	end
 
@@ -105,15 +108,26 @@ function scene:create( event )
         	updatedTimeBitcoin = bitcoinTable.time.updated
 	    end
 	end
+	local function networkCoindeskPrices( event )
+	    if ( event.isError ) then
+	        print( "Network error!" )
+	    else
+	    	encodedPricesCoindesk = event.response
+	        coindeskPrices = json.decode( encodedPricesCoindesk )
+	        btc_to_usd = coindeskPrices["amount"]
+	        print("$" .. btc_to_usd .. " on coindesk")
+	    end
+	end
 	
 	local function updateText( ... )
 		temp.text = ((tonumber(currentTemp)-273.15)*(9/5))+32 .. " F"
 		-- temp2.text = "Feels like " .. currentFeelsLike .. " F"
 		temp3.text = "Wind is " .. currentWind .. " MPH"
 		-- temp4.text = os.date("%c",1422208800)
-		temp4.text = os.date("Last updated %c", weatherTimeVar1)
-		bitcoin.text = "$" .. currentBitcoinPrice .. " per Bitcoin"
-		bitcoinTime.text = "Updated " .. updatedTimeBitcoin
+		temp4.text = os.date("Last updated %b %d, %Y %H:%M:%S CST", weatherTimeVar1)
+		-- bitcoin.text = "$" .. currentBitcoinPrice .. " per Bitcoin"
+		bitcoin.text = "$" .. btc_to_usd .. " per Bitcoin"
+		bitcoinTime.text = "Last updated " .. updatedTimeBitcoin
 	end
 
 	local function getWeather( event )
@@ -124,6 +138,7 @@ function scene:create( event )
 
 	local function getBitcoin( event )
 		-- http(s)://api.coindesk.com/v1/bpi/currentprice.json
+		network.request( "https://api.coinbase.com/v1/prices/spot_rate?currency=USD", "GET", networkCoindeskPrices)
 		network.request( "http://api.coindesk.com/v1/bpi/currentprice.json", "GET", networkListenerBitcoin )
 		timer.performWithDelay( 1000, updateText )
 	end
@@ -165,8 +180,40 @@ function scene:create( event )
 	local function clockTime( ... )
 		clockText.text = os.date( "%X %p" )
 	end
-
 	timer.performWithDelay( 500, clockTime, -1)
+
+	local function autoRefreshFunction( ... )
+		refresh = timer.performWithDelay( 10000, getStuff, -1 )
+		print("AutoRefresh on")
+		-- to cancel, use timer.cancel
+
+	function cancelAutoR( ... )
+	        timer.cancel( refresh ) 
+	        print("Cancelled AutoRefresh")
+	end
+
+	end
+
+	local function onSwitchPress( event )
+	    local switch = event.target
+	    if switch.isOn then
+	    	autoRefreshFunction()
+	    else cancelAutoR()
+	    end
+	end
+
+	local onOffSwitch = widget.newSwitch
+	{
+	    left = 50,
+	    top = 200,
+	    style = "onOff",
+	    id = "onOffSwitch",
+	    onRelease = onSwitchPress
+	}
+	autoRe.text = "Auto-Refresh"
+	autoRe.x = 100
+	autoRe.y = 175
+
 
 	network.request( "http://api.openweathermap.org/data/2.5/weather?q=Abilene,tx&APPID=a177751774b84b3fe9d891b9cf2f36d5", "GET", networkListener )
 	-- network.request( "http://api.wunderground.com/api/9e2343119ccebae7/conditions/q/79601.json", "GET", networkListener )
@@ -174,7 +221,7 @@ function scene:create( event )
 	-- network.request("http://api.openweathermap.org/data/2.5/forecast/daily?q=Abilene,tx&mode=json&cnt=2&units=imperial", "GET", networkListener3)
 	--bitcoin
 	network.request( "http://api.coindesk.com/v1/bpi/currentprice.json", "GET", networkListenerBitcoin )
-
+	network.request( "https://api.coinbase.com/v1/prices/spot_rate?currency=USD", "GET", networkCoindeskPrices)
 	--Ads Loading Here
 	-- ads.init( "admob", "ca-app-pub-1135191116314099/8859539762" )
 	-- ads.show( "banner", { x=0, y=yCenter})
@@ -188,6 +235,8 @@ function scene:create( event )
 	localGroup:insert(bitcoin)
 	localGroup:insert(bitcoinTime)
 	localGroup:insert(myImage)
+	localGroup:insert(onOffSwitch)
+
 	timer.performWithDelay( 2000, updateText )
 end
 
