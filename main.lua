@@ -27,6 +27,8 @@ display.setStatusBar( display.HiddenStatusBar )
 -----enable back button-----
 -------------------------------
 
+Roboto = native.newFont("Roboto")
+
 
 font1 = 34
 font2 = 48
@@ -53,16 +55,17 @@ help = widget.newButton --another global value that we can edit the alpha of
 {
 	id = "helpMe",
     label = "?",
-    fontSize = 60,
+    fontSize = font3,
+    font = "Roboto",
     onRelease = helpFunction,
     shape="circle",
     height = 1,
 	labelColor = { default={ 1, 1, 1}, over={ 96/255, 96/255, 96/255, 1 } },
 	fillColor = { default={ 96/255, 96/255, 96/255, 1}, over={ 1, 1, 1, .5 } },
-	radius = 40,
+	radius = 50,
 	emboss = true
 }
-help.x = display.contentWidth-10
+help.x = display.contentWidth-20
 help.y = 10
 help.anchorX = 1
 help.anchorY = 0

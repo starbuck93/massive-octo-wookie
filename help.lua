@@ -16,14 +16,23 @@ function scene:create( event )
 	ads.show( "banner", { x=0, y=display.contentHeight})
 
 	local options = {
-	text ="Hello there! Thanks for downloading our app! Here's a quick tutorial on how to use the app. Tap Login->Admin->Resume and you'll see the timer that we've created. Tap Login->Admin->Start and type in the information in the correct format (military time with 4 digits) and then you'll get to watch the coutdown until your specified time. If you have any questions, or would like to report a bug, please tap on the following email addresses.", 
-	x = display.contentCenterX, 
-	y = 100, 
-	font = native.systemFont, 
-	fontSize = font2,
-	width = display.actualContentWidth-40,
-	align = "center"}
-
+		text ="Powered by CoinDesk",
+		x = display.contentCenterX, 
+		y = 100, 
+		font = "Roboto", 
+		fontSize = font2,
+		width = display.actualContentWidth-40,
+		align = "center"}
+	local poweredBy = display.newText(options)
+	local options2 = {
+		text ="And by OpenWeatherMap",
+		x = display.contentCenterX, 
+		y = 200, 
+		font = "Roboto", 
+		fontSize = font2,
+		width = display.actualContentWidth-40,
+		align = "center"}
+	local weatherLink = display.newText(options2)
 
 	local back = widget.newButton{
 	 	width = 200,
@@ -33,14 +42,29 @@ function scene:create( event )
         id = "back",
         label = "<-- back",
         fontSize = font2,
+        font = "Roboto",
         labelColor = { default={ 1, 1, 1}, over={ 232/255, 100/255, 37/255, 1 } },
         location = composer.getSceneName( "previous" ),
         onRelease = function() composer.gotoScene(location); end, --ads.hide();
     }
     location = composer.getSceneName( "previous" )
 
-	localGroup:insert( back )
+	local url1 = "http://www.coindesk.com/price/"
+	local url2 = "http://m.openweathermap.com"
+	function deskListener( event )
+		system.openURL( url1 )
+	end
+	function weatherListener( event )
+		system.openURL( url2 )
+	end
 
+
+	localGroup:insert( back )
+	localGroup:insert( poweredBy )
+	localGroup:insert( weatherLink )
+
+	poweredBy:addEventListener( "tap", deskListener )
+	weatherLink:addEventListener( "tap", weatherListener )
 
 end
 

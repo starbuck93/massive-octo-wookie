@@ -15,15 +15,12 @@ function scene:create( event )
 	text ="Maybe someday we'll actually have some settings for you to touch.",
 	x = display.contentCenterX, 
 	y = 200, 
-	font = native.systemFont, 
+	font = "Roboto", 
 	fontSize = font2,
 	width = display.actualContentWidth-40,
 	align = "center"}
 	local someText=display.newText(options)
 	someText.anchorY = 0
-
---need to link this so people can click it
--- http://www.wunderground.com/?apiref=52f81c59a61403ed
 
 
 	local back = widget.newButton{
@@ -34,6 +31,7 @@ function scene:create( event )
         id = "back",
         label = "<-- back",
         fontSize = font2,
+		font = "Roboto", 
         labelColor = { default={ 1, 1, 1}, over={ 232/255, 100/255, 37/255, 1 } },
         onRelease = function() ads.hide(); composer.gotoScene("menu"); end, 
     }
