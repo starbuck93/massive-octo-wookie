@@ -18,8 +18,8 @@ function scene:create( event )
 	{
 		id = "settingsMe",
 	    label = "S",
-		font = "Roboto", 
 	    fontSize = font3,
+   		font = "Roboto", 
 	    onRelease = settingsFunction,
 	    shape="circle",
 	    height = 1,

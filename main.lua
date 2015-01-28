@@ -27,7 +27,7 @@ display.setStatusBar( display.HiddenStatusBar )
 -----enable back button-----
 -------------------------------
 
-Roboto = native.newFont("Roboto")
+-- Roboto = native.newFont("Roboto")
 
 
 font1 = 34
